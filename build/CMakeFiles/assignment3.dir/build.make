@@ -473,9 +473,22 @@ CMakeFiles/assignment3.dir/external/src/imgui/examples/imgui_impl_opengl3.cpp.s:
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/assignment3.dir/external/src/imgui/examples/imgui_impl_opengl3.cpp.s"
 	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/snonk/6.440/project/external/src/imgui/examples/imgui_impl_opengl3.cpp -o CMakeFiles/assignment3.dir/external/src/imgui/examples/imgui_impl_opengl3.cpp.s
 
+CMakeFiles/assignment3.dir/assignment_code/assignment3/CurveNode.cpp.o: CMakeFiles/assignment3.dir/flags.make
+CMakeFiles/assignment3.dir/assignment_code/assignment3/CurveNode.cpp.o: ../assignment_code/assignment3/CurveNode.cpp
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/snonk/6.440/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building CXX object CMakeFiles/assignment3.dir/assignment_code/assignment3/CurveNode.cpp.o"
+	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/assignment3.dir/assignment_code/assignment3/CurveNode.cpp.o -c /home/snonk/6.440/project/assignment_code/assignment3/CurveNode.cpp
+
+CMakeFiles/assignment3.dir/assignment_code/assignment3/CurveNode.cpp.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/assignment3.dir/assignment_code/assignment3/CurveNode.cpp.i"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /home/snonk/6.440/project/assignment_code/assignment3/CurveNode.cpp > CMakeFiles/assignment3.dir/assignment_code/assignment3/CurveNode.cpp.i
+
+CMakeFiles/assignment3.dir/assignment_code/assignment3/CurveNode.cpp.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/assignment3.dir/assignment_code/assignment3/CurveNode.cpp.s"
+	/usr/bin/c++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /home/snonk/6.440/project/assignment_code/assignment3/CurveNode.cpp -o CMakeFiles/assignment3.dir/assignment_code/assignment3/CurveNode.cpp.s
+
 CMakeFiles/assignment3.dir/assignment_code/assignment3/SimulationApp.cpp.o: CMakeFiles/assignment3.dir/flags.make
 CMakeFiles/assignment3.dir/assignment_code/assignment3/SimulationApp.cpp.o: ../assignment_code/assignment3/SimulationApp.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/snonk/6.440/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_33) "Building CXX object CMakeFiles/assignment3.dir/assignment_code/assignment3/SimulationApp.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/snonk/6.440/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Building CXX object CMakeFiles/assignment3.dir/assignment_code/assignment3/SimulationApp.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/assignment3.dir/assignment_code/assignment3/SimulationApp.cpp.o -c /home/snonk/6.440/project/assignment_code/assignment3/SimulationApp.cpp
 
 CMakeFiles/assignment3.dir/assignment_code/assignment3/SimulationApp.cpp.i: cmake_force
@@ -488,7 +501,7 @@ CMakeFiles/assignment3.dir/assignment_code/assignment3/SimulationApp.cpp.s: cmak
 
 CMakeFiles/assignment3.dir/assignment_code/assignment3/main.cpp.o: CMakeFiles/assignment3.dir/flags.make
 CMakeFiles/assignment3.dir/assignment_code/assignment3/main.cpp.o: ../assignment_code/assignment3/main.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/snonk/6.440/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_34) "Building CXX object CMakeFiles/assignment3.dir/assignment_code/assignment3/main.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/snonk/6.440/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Building CXX object CMakeFiles/assignment3.dir/assignment_code/assignment3/main.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/assignment3.dir/assignment_code/assignment3/main.cpp.o -c /home/snonk/6.440/project/assignment_code/assignment3/main.cpp
 
 CMakeFiles/assignment3.dir/assignment_code/assignment3/main.cpp.i: cmake_force
@@ -501,7 +514,7 @@ CMakeFiles/assignment3.dir/assignment_code/assignment3/main.cpp.s: cmake_force
 
 CMakeFiles/assignment3.dir/assignment_code/common/helpers.cpp.o: CMakeFiles/assignment3.dir/flags.make
 CMakeFiles/assignment3.dir/assignment_code/common/helpers.cpp.o: ../assignment_code/common/helpers.cpp
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/snonk/6.440/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_35) "Building CXX object CMakeFiles/assignment3.dir/assignment_code/common/helpers.cpp.o"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/home/snonk/6.440/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_36) "Building CXX object CMakeFiles/assignment3.dir/assignment_code/common/helpers.cpp.o"
 	/usr/bin/c++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/assignment3.dir/assignment_code/common/helpers.cpp.o -c /home/snonk/6.440/project/assignment_code/common/helpers.cpp
 
 CMakeFiles/assignment3.dir/assignment_code/common/helpers.cpp.i: cmake_force
@@ -546,6 +559,7 @@ assignment3_OBJECTS = \
 "CMakeFiles/assignment3.dir/external/src/imgui/imgui_widgets.cpp.o" \
 "CMakeFiles/assignment3.dir/external/src/imgui/examples/imgui_impl_glfw.cpp.o" \
 "CMakeFiles/assignment3.dir/external/src/imgui/examples/imgui_impl_opengl3.cpp.o" \
+"CMakeFiles/assignment3.dir/assignment_code/assignment3/CurveNode.cpp.o" \
 "CMakeFiles/assignment3.dir/assignment_code/assignment3/SimulationApp.cpp.o" \
 "CMakeFiles/assignment3.dir/assignment_code/assignment3/main.cpp.o" \
 "CMakeFiles/assignment3.dir/assignment_code/common/helpers.cpp.o"
@@ -585,6 +599,7 @@ assignment3: CMakeFiles/assignment3.dir/external/src/imgui/imgui_draw.cpp.o
 assignment3: CMakeFiles/assignment3.dir/external/src/imgui/imgui_widgets.cpp.o
 assignment3: CMakeFiles/assignment3.dir/external/src/imgui/examples/imgui_impl_glfw.cpp.o
 assignment3: CMakeFiles/assignment3.dir/external/src/imgui/examples/imgui_impl_opengl3.cpp.o
+assignment3: CMakeFiles/assignment3.dir/assignment_code/assignment3/CurveNode.cpp.o
 assignment3: CMakeFiles/assignment3.dir/assignment_code/assignment3/SimulationApp.cpp.o
 assignment3: CMakeFiles/assignment3.dir/assignment_code/assignment3/main.cpp.o
 assignment3: CMakeFiles/assignment3.dir/assignment_code/common/helpers.cpp.o
@@ -594,7 +609,7 @@ assignment3: /usr/lib/x86_64-linux-gnu/librt.so
 assignment3: /usr/lib/x86_64-linux-gnu/libm.so
 assignment3: /usr/lib/x86_64-linux-gnu/libX11.so
 assignment3: CMakeFiles/assignment3.dir/link.txt
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/snonk/6.440/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_36) "Linking CXX executable assignment3"
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --bold --progress-dir=/home/snonk/6.440/project/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_37) "Linking CXX executable assignment3"
 	$(CMAKE_COMMAND) -E cmake_link_script CMakeFiles/assignment3.dir/link.txt --verbose=$(VERBOSE)
 
 # Rule to build all files generated by this target.

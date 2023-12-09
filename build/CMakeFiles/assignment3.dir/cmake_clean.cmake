@@ -1,4 +1,5 @@
 file(REMOVE_RECURSE
+  "CMakeFiles/assignment3.dir/assignment_code/assignment3/CurveNode.cpp.o"
   "CMakeFiles/assignment3.dir/assignment_code/assignment3/SimulationApp.cpp.o"
   "CMakeFiles/assignment3.dir/assignment_code/assignment3/main.cpp.o"
   "CMakeFiles/assignment3.dir/assignment_code/common/helpers.cpp.o"

@@ -3396,6 +3396,18 @@ gloo/components/ShadingComponent.hpp
 gloo/components/MaterialComponent.hpp
 /home/snonk/6.440/project/assignment_code/assignment3/gloo/components/MaterialComponent.hpp
 
+/home/snonk/6.440/project/assignment_code/assignment3/CurveNode.hpp
+string
+-
+vector
+-
+gloo/SceneNode.hpp
+/home/snonk/6.440/project/assignment_code/assignment3/gloo/SceneNode.hpp
+gloo/VertexObject.hpp
+/home/snonk/6.440/project/assignment_code/assignment3/gloo/VertexObject.hpp
+gloo/shaders/ShaderProgram.hpp
+/home/snonk/6.440/project/assignment_code/assignment3/gloo/shaders/ShaderProgram.hpp
+
 /home/snonk/6.440/project/assignment_code/assignment3/ForwardEulerIntegrator.hpp
 IntegratorBase.hpp
 /home/snonk/6.440/project/assignment_code/assignment3/IntegratorBase.hpp
@@ -3423,6 +3435,8 @@ IntegratorFactory.hpp
 /home/snonk/6.440/project/assignment_code/assignment3/IntegratorFactory.hpp
 HairSystem.hpp
 /home/snonk/6.440/project/assignment_code/assignment3/HairSystem.hpp
+CurveNode.hpp
+/home/snonk/6.440/project/assignment_code/assignment3/CurveNode.hpp
 gloo/components/RenderingComponent.hpp
 /home/snonk/6.440/project/assignment_code/assignment3/gloo/components/RenderingComponent.hpp
 gloo/components/ShadingComponent.hpp

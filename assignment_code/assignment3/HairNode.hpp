@@ -13,6 +13,7 @@
 #include "TrapezoidalIntegrator.hpp"
 #include "IntegratorFactory.hpp"
 #include "HairSystem.hpp"
+#include "CurveNode.hpp"
 #include "gloo/components/RenderingComponent.hpp"
 #include "gloo/components/ShadingComponent.hpp"
 #include "gloo/components/MaterialComponent.hpp"
@@ -41,11 +42,15 @@ class HairNode : public SceneNode {
         point->CreateComponent<ShadingComponent>(shader_);
         point->CreateComponent<RenderingComponent>(sphere_mesh_);
         points_.push_back(point.get());
-        AddChild(std::move(point));
+        // AddChild(std::move(point));
         system_.AddParticle(1);
     }
     system_.SetFixed(0);
     printf("node inited\n");
+
+    auto curve_node = make_unique<CurveNode>(GLOO::SplineBasis::Bezier, state_.positions);
+    curve_ = curve_node.get();
+    AddChild(std::move(curve_node));
   }
 
   void Update(double delta_time) override {
@@ -57,6 +62,7 @@ class HairNode : public SceneNode {
         // std::cout << std::endl;
         points_[i]->GetTransform().SetPosition(state_.positions[i]);
     }
+    curve_->UpdateControlPoints(state_.positions);
   };
 
  private:
@@ -70,6 +76,8 @@ class HairNode : public SceneNode {
   std::shared_ptr<VertexObject> sphere_mesh_;
   std::shared_ptr<ShaderProgram> shader_;
   std::vector<SceneNode*> points_;
+
+  CurveNode* curve_;
 
 };
 }  // namespace GLOO

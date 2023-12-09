@@ -195,6 +195,33 @@ glfw/fast:
 	$(MAKE) -f external/src/glfw-3.3.2/src/CMakeFiles/glfw.dir/build.make external/src/glfw-3.3.2/src/CMakeFiles/glfw.dir/build
 .PHONY : glfw/fast
 
+assignment_code/assignment3/CurveNode.o: assignment_code/assignment3/CurveNode.cpp.o
+
+.PHONY : assignment_code/assignment3/CurveNode.o
+
+# target to build an object file
+assignment_code/assignment3/CurveNode.cpp.o:
+	$(MAKE) -f CMakeFiles/assignment3.dir/build.make CMakeFiles/assignment3.dir/assignment_code/assignment3/CurveNode.cpp.o
+.PHONY : assignment_code/assignment3/CurveNode.cpp.o
+
+assignment_code/assignment3/CurveNode.i: assignment_code/assignment3/CurveNode.cpp.i
+
+.PHONY : assignment_code/assignment3/CurveNode.i
+
+# target to preprocess a source file
+assignment_code/assignment3/CurveNode.cpp.i:
+	$(MAKE) -f CMakeFiles/assignment3.dir/build.make CMakeFiles/assignment3.dir/assignment_code/assignment3/CurveNode.cpp.i
+.PHONY : assignment_code/assignment3/CurveNode.cpp.i
+
+assignment_code/assignment3/CurveNode.s: assignment_code/assignment3/CurveNode.cpp.s
+
+.PHONY : assignment_code/assignment3/CurveNode.s
+
+# target to generate assembly for a file
+assignment_code/assignment3/CurveNode.cpp.s:
+	$(MAKE) -f CMakeFiles/assignment3.dir/build.make CMakeFiles/assignment3.dir/assignment_code/assignment3/CurveNode.cpp.s
+.PHONY : assignment_code/assignment3/CurveNode.cpp.s
+
 assignment_code/assignment3/SimulationApp.o: assignment_code/assignment3/SimulationApp.cpp.o
 
 .PHONY : assignment_code/assignment3/SimulationApp.o
@@ -1155,6 +1182,9 @@ help:
 	@echo "... assignment3"
 	@echo "... uninstall"
 	@echo "... glfw"
+	@echo "... assignment_code/assignment3/CurveNode.o"
+	@echo "... assignment_code/assignment3/CurveNode.i"
+	@echo "... assignment_code/assignment3/CurveNode.s"
 	@echo "... assignment_code/assignment3/SimulationApp.o"
 	@echo "... assignment_code/assignment3/SimulationApp.i"
 	@echo "... assignment_code/assignment3/SimulationApp.s"
