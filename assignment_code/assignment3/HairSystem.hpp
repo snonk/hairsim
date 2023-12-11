@@ -40,64 +40,72 @@ class HairSystem : public ParticleSystemBase {
     return state;
   }
 
-  ParticleState ComputeNextState(const ParticleState& state,
+  std::vector<ParticleState> ComputeNextState(const std::vector<ParticleState>& state,
                                               float time) const {
-    ParticleState ret;
+    std::vector<ParticleState> ret = std::vector<ParticleState>();
 
-    glm::vec3 gravity;
-    glm::vec3 drag;
-
-    std::vector<glm::vec3> forces;
     
-    if (masses.size() == 0) {
-        return state;
-    }
+    // if (masses.size() == 0) {
+    //     return state;
+    // }
 
     // Add forces for each node of hair.
-    for (size_t i = 0; i < state.positions.size(); i++) {
-        gravity = masses[i] * glm::vec3(0,-10.,0);
-        // drag = -k * state.velocities[i];
+    for (size_t strand = 0; strand < state.size(); strand++) {
+        glm::vec3 gravity;
+        glm::vec3 drag;
+
+        std::vector<glm::vec3> forces;
+
+        ParticleState cur_strand;
+
+        for (size_t i = 0; i < state[strand].positions.size(); i++) {
+            gravity = masses[strand][i] * glm::vec3(0,-10.,0);
+            // drag = -k * state[strand].velocities[i];
+            
+            // forces.push_back(gravity + drag + wind_);
+            forces.push_back(gravity + wind_);
+            // forces.push_back(state[strand].positions[i]);
+        }
+
+        ParticleState tmp;
+        std::vector<glm::vec3> d;
+        for (size_t i = 0; i < state[strand].positions.size(); i++) {
+            cur_strand.positions.push_back(state[strand].positions[i] + state[strand].velocities[i] * time + forces[i] * time * time);
+            // solve constraints if not the first node
+            if (i > 0) {
+                glm::vec3 pos_vec = l0 * glm::normalize(cur_strand.positions[i] - cur_strand.positions[i - 1]);
+                d.push_back(cur_strand.positions[i - 1] + pos_vec - cur_strand.positions[i]);
+                cur_strand.positions[i] = cur_strand.positions[i - 1]
+                                + pos_vec;
+            }
+            else {
+                d.push_back(glm::vec3(0));
+            }
+        }
+        for (size_t i = 0; i < state[strand].velocities.size(); i++) {
+            if (i < state[strand].velocities.size() - 1) {
+                cur_strand.velocities.push_back((cur_strand.positions[i] - state[strand].positions[i]) / time
+                                    + s_damping * (-d[i+1])/time);
+            }
+            else {
+                cur_strand.velocities.push_back((cur_strand.positions[i] - state[strand].positions[i]) / time);
+            }
+        }
         
-        // forces.push_back(gravity + drag + wind_);
-        forces.push_back(gravity + wind_);
-    }
 
+        // if fixed, set position to original position and zero out velocity
+        for (size_t i = 0; i < state[strand].positions.size(); i++) {
+            if (fixed_.find(i) != fixed_.end()) {
+                cur_strand.positions[i] = state[strand].positions[i];
+                cur_strand.velocities[i] = glm::vec3(0);
+            }
+        }
 
-    ParticleState tmp;
-    std::vector<glm::vec3> d;
-    for (size_t i = 0; i < state.positions.size(); i++) {
-        ret.positions.push_back(state.positions[i] + state.velocities[i] * time + forces[i] * time * time);
-        // solve constraints if not the first node
-        if (i > 0) {
-            glm::vec3 pos_vec = l0 * glm::normalize(ret.positions[i] - ret.positions[i - 1]);
-            d.push_back(ret.positions[i - 1] + pos_vec - ret.positions[i]);
-            ret.positions[i] = ret.positions[i - 1]
-                               + pos_vec;
-        }
-        else {
-            d.push_back(glm::vec3(0));
-        }
+        ret.push_back(cur_strand);
     }
-    for (size_t i = 0; i < state.velocities.size(); i++) {
-        if (i < state.velocities.size() - 1) {
-            ret.velocities.push_back((ret.positions[i] - state.positions[i]) / time
-                                + s_damping * (-d[i+1])/time);
-        }
-        else {
-            ret.velocities.push_back((ret.positions[i] - state.positions[i]) / time);
-        }
-    }
-    
-
-    // if fixed, set position to original position and zero out velocity
-    for (size_t i = 0; i < state.positions.size(); i++) {
-        if (fixed_.find(i) != fixed_.end()) {
-            ret.positions[i] = state.positions[i];
-            ret.velocities[i] = glm::vec3(0);
-        }
-    }
-
     return ret;
+
+
     
     };
 
@@ -105,9 +113,17 @@ class HairSystem : public ParticleSystemBase {
         fixed_.insert(i);
     };
 
-    void AddParticle(float mass) {
-        // particles_.positions.push_back(position);
-        masses.push_back(mass);
+    void AddStrand() {
+        ParticleState tmp = ParticleState();
+        std::vector<float> mass_tmp = std::vector<float>();
+
+        particles_.push_back(tmp);
+        masses.push_back(mass_tmp);
+    }
+
+    void AddParticle(int strand, float mass, glm::vec3 position) {
+        particles_[strand].positions.push_back(position);
+        masses[strand].push_back(mass);
     };
 
     // void AddSpring(int i, int j, float stiffness) {
@@ -122,10 +138,12 @@ class HairSystem : public ParticleSystemBase {
     private:
     std::set<int> fixed_;
     // std::vector<Spring> springs_;
-    // ParticleState particles_;
+
+    // running list of current particle states for each hair strand
+    std::vector<ParticleState> particles_ = std::vector<ParticleState>();
 
     // mass values for each node
-    std::vector<float> masses;
+    std::vector<std::vector<float>> masses;
 
     // drag constant
     float k;
