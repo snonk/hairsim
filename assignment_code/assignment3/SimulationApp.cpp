@@ -1,4 +1,5 @@
 #include "SimulationApp.hpp"
+#include "Util.hpp"
 
 #include "glm/gtx/string_cast.hpp"
 
@@ -70,7 +71,7 @@ void SimulationApp::SetupScene() {
   // root.AddChild(std::move(simple_node));
 
 
-  int num_strands = 5;
+  int num_strands = 50;
   int nodes_per_strand = 4;
 
   std::cout << "1" << std::endl;
@@ -79,7 +80,10 @@ void SimulationApp::SetupScene() {
   for (int i = 0; i < num_strands; i++) {
     ParticleState strand_state = ParticleState();
     for (int j = 0; j < nodes_per_strand; j++) {
-      strand_state.positions.push_back(glm::vec3((i+j+static_cast <float> (rand()) / static_cast <float> (RAND_MAX))*0.1,-j*0.2,0));
+      glm::vec2 tmp = Util::RandomPtInCirc(0.2, 0, 0);
+      strand_state.positions.push_back(glm::vec3(tmp.x,-j*0.2,tmp.y));
+
+      // strand_state.positions.push_back(glm::vec3((i+j+static_cast <float> (rand()) / static_cast <float> (RAND_MAX))*0.1,-j*0.2,0));
       strand_state.velocities.push_back(glm::vec3(0,0,0));
     }
     hair_state.push_back(strand_state);

@@ -8,6 +8,9 @@
 // CONSTANTS
 #define g 9.8
 #define E 3.65 * 10e9
+#define VOXES 20
+// unit distance in voxel grid used for hair-hair interactions
+#define VOXEL_GRID_UNIT 0.1
 
 
 namespace GLOO {
@@ -27,12 +30,14 @@ class HairSystem : public ParticleSystemBase {
   HairSystem(float dragk) {
     k = dragk;
     wind_ = glm::vec3(0,0,0);
-    s_damping = 1.0;
+    s_damping = 0.9;
+    s_friction = 0.4;
+    s_repulsion = 0.05;
     l0 = 0.3;
   };
 
   void SetWind(float wind) {
-    wind_ = glm::vec3(0,0,wind);
+    wind_ = glm::vec3(2,2,wind);
   }
 
   ParticleState ComputeTimeDerivative(const ParticleState& state,
@@ -59,11 +64,15 @@ class HairSystem : public ParticleSystemBase {
         ParticleState cur_strand;
 
         for (size_t i = 0; i < state[strand].positions.size(); i++) {
-            gravity = masses[strand][i] * glm::vec3(0,-10.,0);
-            // drag = -k * state[strand].velocities[i];
+            float jitter = 0.3;
+            gravity = glm::vec3(((float) rand() / (RAND_MAX)) * jitter,
+                                ((float) rand() / (RAND_MAX)) * jitter,
+                                ((float) rand() / (RAND_MAX)) * jitter);
+            gravity += masses[strand][i] * glm::vec3(0,-10.,0);
+            drag = -k * state[strand].velocities[i];
             
-            // forces.push_back(gravity + drag + wind_);
-            forces.push_back(gravity + wind_);
+            forces.push_back(gravity + drag + wind_);
+            // forces.push_back(gravity + wind_);
             // forces.push_back(state[strand].positions[i]);
         }
 
@@ -102,6 +111,154 @@ class HairSystem : public ParticleSystemBase {
         }
 
         ret.push_back(cur_strand);
+
+    }
+
+
+    //////////////////////////////// VOXEL APPROACH ///////////////////////////////////
+
+    float voxel_pos[VOXES*2][VOXES*2][VOXES*2] = {{{0}}};
+    glm::vec3 voxel_vel[VOXES*2][VOXES*2][VOXES*2] = {{{glm::vec3(0)}}};
+
+    for (size_t strand = 0; strand < state.size(); strand++) {
+
+        for (size_t i = 0; i < state[strand].positions.size(); i++) {
+            std::vector<std::vector<float>> cells;
+            std::vector<float> max_cell;
+            std::vector<float> min_cell;
+            for (int j = 0; j < 3; j++) {
+                min_cell.push_back(std::floor(ret[strand].positions[i][j] / VOXEL_GRID_UNIT) * VOXEL_GRID_UNIT);
+                max_cell.push_back(std::ceil(ret[strand].positions[i][j] / VOXEL_GRID_UNIT) * VOXEL_GRID_UNIT);
+            }
+            cells.push_back(min_cell);
+            cells.push_back(max_cell);
+
+            //std::cout << "ret[strand].positions: " << glm::to_string(ret[strand].positions[i]) << std::endl;
+
+            //std::cout << "min: " << min_cell[0] << " " << min_cell[1] << " " << min_cell[2] << std::endl;
+            //std::cout << "max: " << max_cell[0] << " " << max_cell[1] << " " << max_cell[2] << std::endl;
+
+            
+            for (uint cell = 0; cell < 8; cell++) {
+                int x = cell & 1;
+                int y = (cell >> 1) & 1;
+                int z = (cell >> 2) & 1;
+                glm::vec3 cell_coords = glm::vec3(cells[x][0], cells[y][1], cells[z][2]);
+                glm::vec3 interp_pos = glm::abs(ret[strand].positions[i] - glm::vec3(cell_coords));
+
+
+                cell_coords /= VOXEL_GRID_UNIT;
+                cell_coords += VOXES;
+
+
+                voxel_pos[(int)(cell_coords.x + 0.5)]
+                        [(int)(cell_coords.y + 0.5)]
+                        [(int)(cell_coords.z + 0.5)] += glm::length(interp_pos) / VOXEL_GRID_UNIT;
+                // voxel_pos[(int)(cell_coords.x + 0.5)]
+                //         [(int)(cell_coords.y + 0.5)]
+                //         [(int)(cell_coords.z + 0.5)] += interp_pos.x * interp_pos.y * interp_pos.z;
+                // //std::cout << "interp prod: " << interp_pos.x * interp_pos.y * interp_pos.z << std::endl;
+                //std::cout << "voxel pos: " << voxel_pos[(int)(cell_coords.x + 0.5)]
+                        // [(int)(cell_coords.y + 0.5)]
+                        // [(int)(cell_coords.z + 0.5)] << std::endl;
+                // //std::cout << "ret[strand].velocities[i]: " << glm::to_string(ret[strand].velocities[i]) << std::endl;
+                
+
+                glm::vec3 interp_vel = ret[strand].velocities[i] * (glm::length(interp_pos)/ (float)VOXEL_GRID_UNIT) ; 
+                // glm::vec3 interp_vel = ret[strand].velocities[i] * (interp_pos.x * interp_pos.y * interp_pos.z); 
+                // //std::cout << "cell coords" << (int)(cell_coords.x + 0.5) << "\t" << (int)(cell_coords.y + 0.5) << "\t" << (int)(cell_coords.z + 0.5) << std::endl;
+                // //std::cout << "interp_vel: " << glm::to_string(interp_vel) << std::endl;
+                voxel_vel[(int)(cell_coords.x + 0.5)]
+                        [(int)(cell_coords.y + 0.5)]
+                        [(int)(cell_coords.z + 0.5)] += interp_vel;
+                //std::cout << "voxel_vel: " << glm::to_string(voxel_vel[(int)(cell_coords.x + 0.5)]
+                        // [(int)(cell_coords.y + 0.5)]
+                        // [(int)(cell_coords.z + 0.5)]) << std::endl;
+            }
+        }
+
+    }
+    for (int i = 0; i < VOXES * 2; i++) {
+        for (int j = 0; j < VOXES * 2; j++) {
+            for (int k = 0; k < VOXES * 2; k++) {
+                if (voxel_pos[i][j][k] > 0) {
+                    voxel_vel[i][j][k] /= voxel_pos[i][j][k]; // make sure not zero1!!
+                }
+            }
+        }   
+    }
+    for (size_t strand = 0; strand < state.size(); strand++) {
+
+        // using voxel grids, implement friction and repulsion
+        for (size_t i = 0; i < state[strand].positions.size(); i++) {
+            std::vector<std::vector<float>> cells;
+            std::vector<float> max_cell;
+            std::vector<float> min_cell;
+            for (int j = 0; j < 3; j++) {
+                min_cell.push_back(std::floor(ret[strand].positions[i][j] / VOXEL_GRID_UNIT) * VOXEL_GRID_UNIT);
+                max_cell.push_back(std::ceil(ret[strand].positions[i][j] / VOXEL_GRID_UNIT) * VOXEL_GRID_UNIT);
+            }
+            cells.push_back(min_cell);
+            cells.push_back(max_cell);
+
+            glm::vec3 v_grid = glm::vec3(0);
+
+            float Fx = 0;
+            float Fy = 0;
+            float Fz = 0;
+
+            glm::vec3 grad = glm::vec3(0);
+
+            for (uint cell = 0; cell < 8; cell++) {
+                int x = cell & 1;
+                int y = (cell >> 1) & 1;
+                int z = (cell >> 2) & 1;
+                glm::vec3 cell_coords = glm::vec3(cells[x][0], cells[y][1], cells[z][2]);
+                glm::vec3 interp_pos = glm::abs(ret[strand].positions[i] - glm::vec3(cell_coords));
+
+                cell_coords /= VOXEL_GRID_UNIT;
+                cell_coords += VOXES;
+
+                x = (int)(cell_coords.x + 0.5);
+                y = (int)(cell_coords.y + 0.5);
+                z = (int)(cell_coords.z + 0.5);
+
+                float ax = VOXEL_GRID_UNIT - interp_pos.x;
+                float ay = VOXEL_GRID_UNIT - interp_pos.y;
+                float az = VOXEL_GRID_UNIT - interp_pos.z;
+
+                Fx = ay * az * (voxel_pos[x][y][z] - voxel_pos[x + 1][y][z])
+                   + (VOXEL_GRID_UNIT - ay) * az * (voxel_pos[x][y + 1][z] - voxel_pos[x + 1][y + 1][z])
+                   + ay * (VOXEL_GRID_UNIT - az) * (voxel_pos[x][y][z + 1] - voxel_pos[x + 1][y][z + 1])
+                   + (VOXEL_GRID_UNIT - ay) * (VOXEL_GRID_UNIT - az) * (voxel_pos[x][y + 1][z + 1] - voxel_pos[x + 1][y + 1][z + 1]);
+                Fy = ax * az * (voxel_pos[x][y][z] - voxel_pos[x][y + 1][z])
+                   + (VOXEL_GRID_UNIT - ax) * az * (voxel_pos[x + 1][y][z] - voxel_pos[x + 1][y + 1][z])
+                   + ax * (VOXEL_GRID_UNIT - az) * (voxel_pos[x][y][z + 1] - voxel_pos[x][y + 1][z + 1])
+                   + (VOXEL_GRID_UNIT - ax) * (VOXEL_GRID_UNIT - az) * (voxel_pos[x + 1][y][z + 1] - voxel_pos[x + 1][y + 1][z + 1]);
+                Fz = ay * ax * (voxel_pos[x][y][z] - voxel_pos[x][y][z + 1])
+                   + (VOXEL_GRID_UNIT - ay) * ax * (voxel_pos[x][y + 1][z] - voxel_pos[x][y + 1][z + 1])
+                   + ay * (VOXEL_GRID_UNIT - ax) * (voxel_pos[x + 1][y][z] - voxel_pos[x + 1][y][z + 1])
+                   + (VOXEL_GRID_UNIT - ay) * (VOXEL_GRID_UNIT - ax) * (voxel_pos[x + 1][y + 1][z] - voxel_pos[x + 1][y + 1][z + 1]);
+
+                // glm::vec3 interp_pos = glm::vec3(VOXEL_GRID_UNIT) - glm::abs(state.positions[i] - glm::vec3(cell_coords)); 
+                // //std::cout << (int)(cell_coords.x + 0.5) << "\t" << (int)(cell_coords.y + 0.5) << "\t" << (int)(cell_coords.z + 0.5) << std::endl;
+                // v_grid += voxel_vel[0][0][0];
+                v_grid += voxel_vel[x][y][z] / (float) 8; 
+                grad += glm::vec3(Fx, Fy, Fz);
+                //std::cout << "voxel_vel: " << glm::to_string(voxel_vel[x][y][z]) << std::endl;
+                //std::cout << "v_grid: " << glm::to_string(v_grid) << std::endl;
+            }
+
+
+
+            if (glm::length(ret[strand].velocities[i]) < 100 && glm::length(v_grid) < 100 && glm::length(grad) < 10) {
+                ret[strand].velocities[i] = ret[strand].velocities[i] * (1 - s_friction) + v_grid * s_friction;
+                ret[strand].velocities[i] = ret[strand].velocities[i] + s_repulsion * glm::normalize(grad);
+            }
+
+
+        }
+
     }
     return ret;
 
@@ -159,9 +316,21 @@ class HairSystem : public ParticleSystemBase {
 
     // damping coefficient
     float s_damping;
+    // friction coefficient
+    float s_friction;
+    // friction coefficient
+    float s_repulsion;
 
     // enforced distance between every node and its predecessor
     float l0;
+
+    // voxel grid 
+    // std::vector<std::vector<std::vector<glm::vec3>>> voxel_vel;
+    // std::vector<std::vector<std::vector<glm::vec3>>> voxel_vel;
+
+    // float voxel_pos[VOXES*2][VOXES*2][VOXES*2] = {{{0}}};
+    // float voxel_vel[VOXES*2][VOXES*2][VOXES*2] = {{{0}}};
+
 
 };
 }  // namespace GLOO

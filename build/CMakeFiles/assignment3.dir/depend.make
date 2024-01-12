@@ -668,6 +668,7 @@ CMakeFiles/assignment3.dir/assignment_code/assignment3/SimulationApp.cpp.o: ../a
 CMakeFiles/assignment3.dir/assignment_code/assignment3/SimulationApp.cpp.o: ../assignment_code/assignment3/SimulationApp.cpp
 CMakeFiles/assignment3.dir/assignment_code/assignment3/SimulationApp.cpp.o: ../assignment_code/assignment3/SimulationApp.hpp
 CMakeFiles/assignment3.dir/assignment_code/assignment3/SimulationApp.cpp.o: ../assignment_code/assignment3/TrapezoidalIntegrator.hpp
+CMakeFiles/assignment3.dir/assignment_code/assignment3/SimulationApp.cpp.o: ../assignment_code/assignment3/Util.hpp
 
 CMakeFiles/assignment3.dir/assignment_code/assignment3/main.cpp.o: ../external/src/glad/include/KHR/khrplatform.h
 CMakeFiles/assignment3.dir/assignment_code/assignment3/main.cpp.o: ../external/src/glad/include/glad/glad.h

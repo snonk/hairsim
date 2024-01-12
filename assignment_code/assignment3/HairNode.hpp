@@ -32,6 +32,7 @@ class HairNode : public SceneNode {
     sphere_mesh_ = PrimitiveFactory::CreateSphere(0.03f, 25, 25);
     num_nodes_ = num_nodes;
     num_strands_ = num_strands;
+    wind_= true;
 
     InitNodes();
 
@@ -46,8 +47,8 @@ class HairNode : public SceneNode {
           point->CreateComponent<ShadingComponent>(shader_);
           point->CreateComponent<RenderingComponent>(sphere_mesh_);
           points_.push_back(point.get());
-          // AddChild(std::move(point));
           system_.AddParticle(strand, 1, point->GetTransform().GetWorldPosition());
+          AddChild(std::move(point));
       }
       std::cout << "nodes added to system" << std::endl;
       auto curve_node = make_unique<CurveNode>(GLOO::SplineBasis::Bezier, state_[strand].positions);
@@ -62,6 +63,27 @@ class HairNode : public SceneNode {
   }
 
   void Update(double delta_time) override {
+    static bool prev_released = true;
+    if (InputManager::GetInstance().IsKeyPressed('R')) {
+        if (prev_released) {
+            state_ = initial_state_;
+        }
+        prev_released = false;
+    } else if (InputManager::GetInstance().IsKeyPressed('W')) {
+        if (prev_released) {
+            if (wind_) {
+                system_.SetWind(-10.);
+            }
+            else {
+                system_.SetWind(0);
+            }
+            wind_ = !wind_;
+        }
+        prev_released = false;
+    }
+    else {
+        prev_released = true;
+    }
 
     state_ = system_.ComputeNextState(state_, delta_time);
     // for (size_t i = 0; i < points_.size(); i++) {
@@ -90,6 +112,8 @@ class HairNode : public SceneNode {
   std::vector<SceneNode*> points_;
 
   std::vector<CurveNode*> curves_;
+
+  bool wind_;
 
 };
 }  // namespace GLOO
