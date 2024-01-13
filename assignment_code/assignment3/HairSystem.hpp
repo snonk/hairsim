@@ -49,11 +49,6 @@ class HairSystem : public ParticleSystemBase {
                                               float time) const {
     std::vector<ParticleState> ret = std::vector<ParticleState>();
 
-    
-    // if (masses.size() == 0) {
-    //     return state;
-    // }
-
     // Add forces for each node of hair.
     for (size_t strand = 0; strand < state.size(); strand++) {
         glm::vec3 gravity;
@@ -72,15 +67,15 @@ class HairSystem : public ParticleSystemBase {
             drag = -k * state[strand].velocities[i];
             
             forces.push_back(gravity + drag + wind_);
-            // forces.push_back(gravity + wind_);
-            // forces.push_back(state[strand].positions[i]);
         }
 
         ParticleState tmp;
         std::vector<glm::vec3> d;
+
         for (size_t i = 0; i < state[strand].positions.size(); i++) {
             cur_strand.positions.push_back(state[strand].positions[i] + state[strand].velocities[i] * time + forces[i] * time * time);
-            // solve constraints if not the first node
+
+            // solve FTL distance constraints if not the first node
             if (i > 0) {
                 glm::vec3 pos_vec = l0 * glm::normalize(cur_strand.positions[i] - cur_strand.positions[i - 1]);
                 d.push_back(cur_strand.positions[i - 1] + pos_vec - cur_strand.positions[i]);
@@ -102,7 +97,7 @@ class HairSystem : public ParticleSystemBase {
         }
         
 
-        // if fixed, set position to original position and zero out velocity
+        // if fixed, set particle position to original position and zero out velocity
         for (size_t i = 0; i < state[strand].positions.size(); i++) {
             if (fixed_.find(i) != fixed_.end()) {
                 cur_strand.positions[i] = state[strand].positions[i];
@@ -115,7 +110,7 @@ class HairSystem : public ParticleSystemBase {
     }
 
 
-    //////////////////////////////// VOXEL APPROACH ///////////////////////////////////
+    //////////////////////////////// VOXEL APPROACH TO VELOCITY SMOOTHING ///////////////////////////////////
 
     float voxel_pos[VOXES*2][VOXES*2][VOXES*2] = {{{0}}};
     glm::vec3 voxel_vel[VOXES*2][VOXES*2][VOXES*2] = {{{glm::vec3(0)}}};
@@ -132,12 +127,6 @@ class HairSystem : public ParticleSystemBase {
             }
             cells.push_back(min_cell);
             cells.push_back(max_cell);
-
-            //std::cout << "ret[strand].positions: " << glm::to_string(ret[strand].positions[i]) << std::endl;
-
-            //std::cout << "min: " << min_cell[0] << " " << min_cell[1] << " " << min_cell[2] << std::endl;
-            //std::cout << "max: " << max_cell[0] << " " << max_cell[1] << " " << max_cell[2] << std::endl;
-
             
             for (uint cell = 0; cell < 8; cell++) {
                 int x = cell & 1;
@@ -154,26 +143,12 @@ class HairSystem : public ParticleSystemBase {
                 voxel_pos[(int)(cell_coords.x + 0.5)]
                         [(int)(cell_coords.y + 0.5)]
                         [(int)(cell_coords.z + 0.5)] += glm::length(interp_pos) / VOXEL_GRID_UNIT;
-                // voxel_pos[(int)(cell_coords.x + 0.5)]
-                //         [(int)(cell_coords.y + 0.5)]
-                //         [(int)(cell_coords.z + 0.5)] += interp_pos.x * interp_pos.y * interp_pos.z;
-                // //std::cout << "interp prod: " << interp_pos.x * interp_pos.y * interp_pos.z << std::endl;
-                //std::cout << "voxel pos: " << voxel_pos[(int)(cell_coords.x + 0.5)]
-                        // [(int)(cell_coords.y + 0.5)]
-                        // [(int)(cell_coords.z + 0.5)] << std::endl;
-                // //std::cout << "ret[strand].velocities[i]: " << glm::to_string(ret[strand].velocities[i]) << std::endl;
                 
 
                 glm::vec3 interp_vel = ret[strand].velocities[i] * (glm::length(interp_pos)/ (float)VOXEL_GRID_UNIT) ; 
-                // glm::vec3 interp_vel = ret[strand].velocities[i] * (interp_pos.x * interp_pos.y * interp_pos.z); 
-                // //std::cout << "cell coords" << (int)(cell_coords.x + 0.5) << "\t" << (int)(cell_coords.y + 0.5) << "\t" << (int)(cell_coords.z + 0.5) << std::endl;
-                // //std::cout << "interp_vel: " << glm::to_string(interp_vel) << std::endl;
                 voxel_vel[(int)(cell_coords.x + 0.5)]
                         [(int)(cell_coords.y + 0.5)]
                         [(int)(cell_coords.z + 0.5)] += interp_vel;
-                //std::cout << "voxel_vel: " << glm::to_string(voxel_vel[(int)(cell_coords.x + 0.5)]
-                        // [(int)(cell_coords.y + 0.5)]
-                        // [(int)(cell_coords.z + 0.5)]) << std::endl;
             }
         }
 
@@ -240,13 +215,8 @@ class HairSystem : public ParticleSystemBase {
                    + ay * (VOXEL_GRID_UNIT - ax) * (voxel_pos[x + 1][y][z] - voxel_pos[x + 1][y][z + 1])
                    + (VOXEL_GRID_UNIT - ay) * (VOXEL_GRID_UNIT - ax) * (voxel_pos[x + 1][y + 1][z] - voxel_pos[x + 1][y + 1][z + 1]);
 
-                // glm::vec3 interp_pos = glm::vec3(VOXEL_GRID_UNIT) - glm::abs(state.positions[i] - glm::vec3(cell_coords)); 
-                // //std::cout << (int)(cell_coords.x + 0.5) << "\t" << (int)(cell_coords.y + 0.5) << "\t" << (int)(cell_coords.z + 0.5) << std::endl;
-                // v_grid += voxel_vel[0][0][0];
                 v_grid += voxel_vel[x][y][z] / (float) 8; 
                 grad += glm::vec3(Fx, Fy, Fz);
-                //std::cout << "voxel_vel: " << glm::to_string(voxel_vel[x][y][z]) << std::endl;
-                //std::cout << "v_grid: " << glm::to_string(v_grid) << std::endl;
             }
 
 
@@ -283,18 +253,8 @@ class HairSystem : public ParticleSystemBase {
         masses[strand].push_back(mass);
     };
 
-    // void AddSpring(int i, int j, float stiffness) {
-    //     springs_.push_back(Spring{
-    //         i,
-    //         j,
-    //         glm::length(particles_.positions[i] - particles_.positions[j]),
-    //         stiffness,
-    //     });
-    // };
-
     private:
     std::set<int> fixed_;
-    // std::vector<Spring> springs_;
 
     // running list of current particle states for each hair strand
     std::vector<ParticleState> particles_ = std::vector<ParticleState>();
@@ -311,9 +271,6 @@ class HairSystem : public ParticleSystemBase {
     // distance between nodes of hair cantilever beam
     float d_;
 
-    // number of nodes in a hair strand (k + 1)
-    // int num_nodes;
-
     // damping coefficient
     float s_damping;
     // friction coefficient
@@ -323,14 +280,6 @@ class HairSystem : public ParticleSystemBase {
 
     // enforced distance between every node and its predecessor
     float l0;
-
-    // voxel grid 
-    // std::vector<std::vector<std::vector<glm::vec3>>> voxel_vel;
-    // std::vector<std::vector<std::vector<glm::vec3>>> voxel_vel;
-
-    // float voxel_pos[VOXES*2][VOXES*2][VOXES*2] = {{{0}}};
-    // float voxel_vel[VOXES*2][VOXES*2][VOXES*2] = {{{0}}};
-
 
 };
 }  // namespace GLOO

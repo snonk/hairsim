@@ -40,8 +40,8 @@ class HairNode : public SceneNode {
 
   void InitNodes() {
     for (int strand = 0; strand < num_strands_; strand++ ){
-      std::cout << "strand " << strand << std::endl;
       system_.AddStrand();
+
       for (int i = 0; i < num_nodes_; i++) {
           auto point = make_unique<SceneNode>();
           point->CreateComponent<ShadingComponent>(shader_);
@@ -50,15 +50,14 @@ class HairNode : public SceneNode {
           system_.AddParticle(strand, 1, point->GetTransform().GetWorldPosition());
           AddChild(std::move(point));
       }
-      std::cout << "nodes added to system" << std::endl;
+
       auto curve_node = make_unique<CurveNode>(GLOO::SplineBasis::Bezier, state_[strand].positions);
       curves_.push_back(curve_node.get());
       AddChild(std::move(curve_node));
-      std::cout << "curves added to app" << std::endl;
 
     }
+    // All hair strands attached to initial position via first particle
     system_.SetFixed(0);
-    printf("node inited\n");
 
   }
 
@@ -86,11 +85,7 @@ class HairNode : public SceneNode {
     }
 
     state_ = system_.ComputeNextState(state_, delta_time);
-    // for (size_t i = 0; i < points_.size(); i++) {
-    //     // std::cout << "position " << i << ": " << glm::to_string(state_.positions[i]) << std::endl;
-    //     // std::cout << "velocity " << i << ": " << glm::to_string(state_.velocities[i]) << std::endl;
-    //     // std::cout << std::endl;
-    // }
+
     for (size_t strand = 0; strand < num_strands_; strand++) {
       curves_[strand]->UpdateControlPoints(state_[strand].positions);
       for (size_t node = 0; node < num_nodes_; node++)
